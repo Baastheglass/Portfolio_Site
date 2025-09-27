@@ -1,9 +1,23 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import Image from "next/image";
 import styles from "../page.module.css";
 
 export default function Home() {
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    // Trigger fade-in effect after component mounts
+    const timer = setTimeout(() => {
+      setIsVisible(true)
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
-    <div className={styles.page}>
+    <div className={`${styles.page} ${isVisible ? styles.fadeIn : styles.fadeOut}`}>
       <main className={styles.main}>
         <Image
           className={styles.logo}
