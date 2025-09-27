@@ -1,11 +1,17 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import Image from "next/image";
-import styles from "../page.module.css";
+import { useEffect, useState, useRef } from 'react'
+import styles from "./home.module.css";
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false)
+  const [messages, setMessages] = useState([
+    { role: 'system', content: 'BAASIL_AI_TERMINAL v2.0.1 initialized...', timestamp: Date.now() }
+  ])
+  const [input, setInput] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const messagesEndRef = useRef(null)
+  const inputRef = useRef(null)
 
   useEffect(() => {
     // Trigger fade-in effect after component mounts
@@ -16,94 +22,118 @@ export default function Home() {
     return () => clearTimeout(timer)
   }, [])
 
-  return (
-    <div className={`${styles.page} ${isVisible ? styles.fadeIn : styles.fadeOut}`}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  useEffect(() => {
+    // Auto-scroll to bottom when new messages arrive
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+  useEffect(() => {
+    // Focus input on mount
+    inputRef.current?.focus()
+  }, [])
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!input.trim() || isLoading) return
+
+    const userMessage = { role: 'user', content: input.trim(), timestamp: Date.now() }
+    setMessages(prev => [...prev, userMessage])
+    setInput('')
+    setIsLoading(true)
+
+    // Simulate AI response (replace with actual API call)
+    setTimeout(() => {
+      const aiResponse = {
+        role: 'assistant',
+        content: `Processing query: "${userMessage.content}"\n\nThis is a simulated response. Replace this with your actual LLM API integration.`,
+        timestamp: Date.now()
+      }
+      setMessages(prev => [...prev, aiResponse])
+      setIsLoading(false)
+    }, 1500)
+  }
+
+  const clearTerminal = () => {
+    setMessages([
+      { role: 'system', content: 'Terminal cleared. BAASIL_AI_TERMINAL ready...', timestamp: Date.now() }
+    ])
+  }
+
+  return (
+    <div className={`${styles.container} ${isVisible ? styles.fadeIn : styles.fadeOut}`}>
+      {/* Header */}
+      <div className={styles.header}>
+        <div className={styles.title}>
+          <span className={styles.prompt}>baasil@ai-terminal:~$</span>
+          <span className={styles.subtitle}>Neural Interface v2.0.1</span>
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+        <button onClick={clearTerminal} className={styles.clearBtn}>
+          [CLEAR]
+        </button>
+      </div>
+
+      {/* Messages Area */}
+      <div className={styles.messagesContainer}>
+        <div className={styles.messages}>
+          {messages.map((message, index) => (
+            <div key={index} className={`${styles.message} ${styles[message.role]}`}>
+              <div className={styles.messageHeader}>
+                <span className={styles.messageRole}>
+                  {message.role === 'user' ? '> USER' : 
+                   message.role === 'assistant' ? '> AI' : '> SYS'}
+                </span>
+                <span className={styles.timestamp}>
+                  {new Date(message.timestamp).toLocaleTimeString()}
+                </span>
+              </div>
+              <div className={styles.messageContent}>
+                {message.content}
+              </div>
+            </div>
+          ))}
+          
+          {isLoading && (
+            <div className={`${styles.message} ${styles.assistant}`}>
+              <div className={styles.messageHeader}>
+                <span className={styles.messageRole}>&gt; AI</span>
+                <span className={styles.timestamp}>Processing...</span>
+              </div>
+              <div className={styles.messageContent}>
+                <span className={styles.loadingDots}>Analyzing</span>
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+      </div>
+
+      {/* Input Area */}
+      <form onSubmit={handleSubmit} className={styles.inputArea}>
+        <div className={styles.inputContainer}>
+          <span className={styles.inputPrompt}>baasil@query:~$</span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Enter your query..."
+            className={styles.input}
+            disabled={isLoading}
           />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <button type="submit" disabled={!input.trim() || isLoading} className={styles.sendBtn}>
+            [EXEC]
+          </button>
+        </div>
+      </form>
+
+      {/* Status Bar */}
+      <div className={styles.statusBar}>
+        <span className={styles.status}>
+          STATUS: {isLoading ? 'PROCESSING' : 'READY'} | 
+          MSGS: {messages.length} | 
+          UPTIME: {Math.floor((Date.now() - messages[0]?.timestamp) / 1000)}s
+        </span>
+      </div>
     </div>
   );
 }
