@@ -6,7 +6,7 @@ import styles from "./home.module.css";
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false)
   const [messages, setMessages] = useState([
-    { role: 'system', content: 'BAASIL_AI_TERMINAL v2.0.1 initialized...', timestamp: Date.now() }
+    { role: 'system', content: 'BAASIL_AI_TERMINAL v2.0.1 initialized...\nRAG System: ONLINE | Knowledge Base: LOADED | Status: READY', timestamp: Date.now() }
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -41,16 +41,41 @@ export default function Home() {
     setInput('')
     setIsLoading(true)
 
-    // Simulate AI response (replace with actual API call)
-    setTimeout(() => {
+    try {
+      // Call the backend search endpoint
+      const response = await fetch('http://localhost:8000/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: userMessage.content
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      
       const aiResponse = {
         role: 'assistant',
-        content: `Processing query: "${userMessage.content}"\n\nThis is a simulated response. Replace this with your actual LLM API integration.`,
+        content: data.results || 'No response received from the AI.',
         timestamp: Date.now()
       }
       setMessages(prev => [...prev, aiResponse])
+    } catch (error) {
+      console.error('Error calling backend:', error)
+      const errorResponse = {
+        role: 'assistant',
+        content: `Error: Unable to connect to the AI service. Please make sure the backend server is running.\n\nDetails: ${error.message}`,
+        timestamp: Date.now()
+      }
+      setMessages(prev => [...prev, errorResponse])
+    } finally {
       setIsLoading(false)
-    }, 1500)
+    }
   }
 
   const clearTerminal = () => {

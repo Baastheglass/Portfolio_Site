@@ -53,7 +53,6 @@ resume = """Muhammad Baasil
             FAST-NUCES
             Bachelors of Computer Science
             09/2022 - Present
-            CGPA: 2.87
             PERSONAL PROJECTS
             Mental Health Chatbot
             Made a mental health chatbot with a fully functioning back-end and fror
