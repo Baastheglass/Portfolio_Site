@@ -100,22 +100,31 @@ export default function Home() {
       {/* Messages Area */}
       <div className={styles.messagesContainer}>
         <div className={styles.messages}>
-          {messages.map((message, index) => (
-            <div key={index} className={`${styles.message} ${styles[message.role]}`}>
-              <div className={styles.messageHeader}>
-                <span className={styles.messageRole}>
-                  {message.role === 'user' ? '> USER' : 
-                   message.role === 'assistant' ? '> AI' : '> SYS'}
-                </span>
-                <span className={styles.timestamp}>
-                  {new Date(message.timestamp).toLocaleTimeString()}
-                </span>
+          {messages.map((message, index) => {
+            // Find the latest system message index
+            const latestSystemIndex = messages.map((msg, idx) => msg.role === 'system' ? idx : -1)
+                                           .filter(idx => idx !== -1)
+                                           .pop()
+            
+            const isLatestSystem = message.role === 'system' && index === latestSystemIndex
+            
+            return (
+              <div key={index} className={`${styles.message} ${styles[message.role]} ${isLatestSystem ? styles.latest : ''}`}>
+                <div className={styles.messageHeader}>
+                  <span className={styles.messageRole}>
+                    {message.role === 'user' ? '> USER' : 
+                     message.role === 'assistant' ? '> AI' : '> SYS'}
+                  </span>
+                  <span className={styles.timestamp}>
+                    {new Date(message.timestamp).toLocaleTimeString()}
+                  </span>
+                </div>
+                <div className={styles.messageContent}>
+                  {message.content}
+                </div>
               </div>
-              <div className={styles.messageContent}>
-                {message.content}
-              </div>
-            </div>
-          ))}
+            )
+          })}
           
           {isLoading && (
             <div className={`${styles.message} ${styles.assistant}`}>
