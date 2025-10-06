@@ -157,6 +157,12 @@
   51%, 100% { opacity: 0; }
 }
 
+/* Typing cursor effect */
+.typingCursor {
+  color: #ffffff;
+  animation: blink 1s infinite;
+}
+
 /* Input Area */
 .inputArea {
   padding: 1rem 2rem;
@@ -294,19 +300,22 @@
   background: #555;
 }
 
-/* Glitch effect for latest system message */
-.message.system.latest {
-  animation: systemGlitch 3s infinite;
+/* Glitch effect for latest SYSTEM (assistant) message */
+.message.assistant.latest {
+  animation: systemGlitch 8s infinite;
 }
 
 @keyframes systemGlitch {
-  0%, 85%, 100% {
+  0%, 90%, 100% {
     text-shadow: none;
   }
-  90% {
-    text-shadow: 2px 0 #ff0000, -2px 0 #ffffff;
+  92% {
+    text-shadow: 1px 0 #ff0000, -1px 0 #ffffff;
   }
-  95% {
-    text-shadow: -1px 0 #00ff00, 1px 0 #ff0000;
+  94% {
+    text-shadow: -1px 0 #ff0000, 1px 0 #ffffff;
+  }
+  96% {
+    text-shadow: 1px 0 #ffffff, -1px 0 #ff0000;
   }
 }

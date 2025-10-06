@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import styles from "./home.module.css";
+import { welcomeMessage } from '../utils/constants';
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false)
@@ -10,10 +11,17 @@ export default function Home() {
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isTyping, setIsTyping] = useState(false)
+  const [typingMessageId, setTypingMessageId] = useState(null)
+  const [isClient, setIsClient] = useState(false)
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
+  const typingIntervalRef = useRef(null)
 
   useEffect(() => {
+    // Mark as client-side to prevent hydration issues
+    setIsClient(true)
+    
     // Trigger fade-in effect after component mounts
     const timer = setTimeout(() => {
       setIsVisible(true)
@@ -27,14 +35,65 @@ export default function Home() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  // Typewriter effect function
+  const typeMessage = (message, callback) => {
+    const messageId = Date.now()
+    setTypingMessageId(messageId)
+    setIsTyping(true)
+    
+    // Add empty message first
+    setMessages(prev => [...prev, {
+      role: 'assistant',
+      content: '',
+      timestamp: messageId,
+      isTyping: true
+    }])
+    
+    let currentIndex = 0
+    const typingSpeed = 20 // milliseconds per character
+    
+    typingIntervalRef.current = setInterval(() => {
+      if (currentIndex <= message.length) {
+        setMessages(prev => prev.map(msg => 
+          msg.timestamp === messageId 
+            ? { ...msg, content: message.slice(0, currentIndex) }
+            : msg
+        ))
+        currentIndex++
+      } else {
+        clearInterval(typingIntervalRef.current)
+        setMessages(prev => prev.map(msg => 
+          msg.timestamp === messageId 
+            ? { ...msg, isTyping: false }
+            : msg
+        ))
+        setIsTyping(false)
+        setTypingMessageId(null)
+        if (callback) callback()
+      }
+    }, typingSpeed)
+  }
+
   useEffect(() => {
     // Focus input on mount
     inputRef.current?.focus()
+    
+    // Start typing welcome message after a short delay
+    const welcomeTimer = setTimeout(() => {
+      typeMessage(welcomeMessage)
+    }, 1500) // 1.5 second delay after page load
+    
+    return () => {
+      clearTimeout(welcomeTimer)
+      if (typingIntervalRef.current) {
+        clearInterval(typingIntervalRef.current)
+      }
+    }
   }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!input.trim() || isLoading) return
+    if (!input.trim() || isLoading || isTyping) return
 
     const userMessage = { role: 'user', content: input.trim(), timestamp: Date.now() }
     setMessages(prev => [...prev, userMessage])
@@ -79,9 +138,21 @@ export default function Home() {
   }
 
   const clearTerminal = () => {
+    // Clear any ongoing typing
+    if (typingIntervalRef.current) {
+      clearInterval(typingIntervalRef.current)
+    }
+    setIsTyping(false)
+    setTypingMessageId(null)
+    
     setMessages([
       { role: 'system', content: 'Terminal cleared. BAASIL_AI_TERMINAL ready...', timestamp: Date.now() }
     ])
+    
+    // Type welcome message after clearing
+    setTimeout(() => {
+      typeMessage(welcomeMessage)
+    }, 800) // Shorter delay after clearing
   }
 
   return (
@@ -101,26 +172,27 @@ export default function Home() {
       <div className={styles.messagesContainer}>
         <div className={styles.messages}>
           {messages.map((message, index) => {
-            // Find the latest system message index
-            const latestSystemIndex = messages.map((msg, idx) => msg.role === 'system' ? idx : -1)
+            // Find the latest SYSTEM (assistant) message index
+            const latestSystemIndex = messages.map((msg, idx) => msg.role === 'assistant' ? idx : -1)
                                            .filter(idx => idx !== -1)
                                            .pop()
             
-            const isLatestSystem = message.role === 'system' && index === latestSystemIndex
+            const isLatestSystem = message.role === 'assistant' && index === latestSystemIndex
             
             return (
               <div key={index} className={`${styles.message} ${styles[message.role]} ${isLatestSystem ? styles.latest : ''}`}>
                 <div className={styles.messageHeader}>
                   <span className={styles.messageRole}>
                     {message.role === 'user' ? '> USER' : 
-                     message.role === 'assistant' ? '> AI' : '> SYS'}
+                     message.role === 'assistant' ? '> SYSTEM' : '> SYS'}
                   </span>
                   <span className={styles.timestamp}>
-                    {new Date(message.timestamp).toLocaleTimeString()}
+                    {isClient ? new Date(message.timestamp).toLocaleTimeString() : '--:--:--'}
                   </span>
                 </div>
                 <div className={styles.messageContent}>
                   {message.content}
+                  {message.isTyping && <span className={styles.typingCursor}>_</span>}
                 </div>
               </div>
             )
@@ -129,7 +201,7 @@ export default function Home() {
           {isLoading && (
             <div className={`${styles.message} ${styles.assistant}`}>
               <div className={styles.messageHeader}>
-                <span className={styles.messageRole}>&gt; AI</span>
+                <span className={styles.messageRole}>&gt; SYSTEM</span>
                 <span className={styles.timestamp}>Processing...</span>
               </div>
               <div className={styles.messageContent}>
