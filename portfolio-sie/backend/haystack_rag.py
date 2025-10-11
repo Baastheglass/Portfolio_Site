@@ -17,7 +17,7 @@ class RagAgent:
     def __init__(self):
         load_dotenv()
         self.api_key = Secret.from_env_var("OPENROUTER_API_KEY")
-        self.chat_generator = OpenRouterChatGenerator(model="deepseek/deepseek-chat-v3.1:free", api_key=self.api_key)
+        self.chat_generator = OpenRouterChatGenerator(model="qwen/qwen3-235b-a22b:free", api_key=self.api_key)
         self.template = [
             ChatMessage.from_user(
                 """

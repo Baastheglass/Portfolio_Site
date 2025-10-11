@@ -5,9 +5,36 @@ import styles from "./home.module.css";
 import { welcomeMessage } from '../utils/constants';
 
 export default function Home() {
+  const neofetchBanner = `
+    ╔════════════════════════════════════════════════════════════════╗
+    ║                                                                ║
+    ║   ██████╗  ██████╗  ██████╗ ███████╗██╗██╗                    ║
+    ║   ██╔══██╗██╔══██╗██╔══██╗██╔════╝██║██║                    ║
+    ║   ██████╔╝███████║███████║███████╗██║██║                    ║
+    ║   ██╔══██╗██╔══██║██╔══██║╚════██║██║██║                    ║
+    ║   ██████╔╝██║  ██║██║  ██║███████║██║███████╗               ║
+    ║   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝╚══════╝               ║
+    ║                                                                ║
+    ╚════════════════════════════════════════════════════════════════╝
+
+    root@baasil
+    ────────────────────────────────────────────────────────────────
+    OS: Neural Interface v2.0.1
+    Host: AI Terminal Framework
+    Kernel: RAG-Linux 6.x-quantum
+    Uptime: Just booted
+    Shell: bash 5.0.3
+    Resolution: Infinite x Dynamic
+    Terminal: BAASIL_AI_TERM
+    CPU: DeepSeek-R1 @ Neural Hz
+    Memory: Knowledge Base [LOADED]
+    ────────────────────────────────────────────────────────────────
+    Status: ONLINE | Ready for queries
+  `;
+
   const [isVisible, setIsVisible] = useState(false)
   const [messages, setMessages] = useState([
-    { role: 'system', content: 'BAASIL_AI_TERMINAL v2.0.1 initialized...\nRAG System: ONLINE | Knowledge Base: LOADED | Status: READY', timestamp: Date.now() }
+    { role: 'system', content: neofetchBanner, timestamp: Date.now() }
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -31,8 +58,15 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    // Auto-scroll to bottom when new messages arrive
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    // Auto-scroll to bottom when new messages arrive, but only if user hasn't scrolled up
+    // Allow manual scrolling during typing animation
+    const container = messagesEndRef.current?.parentElement?.parentElement
+    if (container) {
+      const isScrolledToBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100
+      if (isScrolledToBottom) {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+      }
+    }
   }, [messages])
 
   // Typewriter effect function
@@ -50,7 +84,7 @@ export default function Home() {
     }])
     
     let currentIndex = 0
-    const typingSpeed = 20 // milliseconds per character
+    const typingSpeed = 5 // milliseconds per character - much faster
     
     typingIntervalRef.current = setInterval(() => {
       if (currentIndex <= message.length) {
@@ -78,10 +112,10 @@ export default function Home() {
     // Focus input on mount
     inputRef.current?.focus()
     
-    // Start typing welcome message after a short delay
+    // Start typing welcome message after 5 seconds to appreciate the banner
     const welcomeTimer = setTimeout(() => {
       typeMessage(welcomeMessage)
-    }, 1500) // 1.5 second delay after page load
+    }, 5000) // 5 second delay to appreciate the banner
     
     return () => {
       clearTimeout(welcomeTimer)
@@ -146,7 +180,7 @@ export default function Home() {
     setTypingMessageId(null)
     
     setMessages([
-      { role: 'system', content: 'Terminal cleared. BAASIL_AI_TERMINAL ready...', timestamp: Date.now() }
+      { role: 'system', content: neofetchBanner, timestamp: Date.now() }
     ])
     
     // Type welcome message after clearing

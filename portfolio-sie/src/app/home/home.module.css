@@ -302,20 +302,20 @@
 
 /* Glitch effect for latest SYSTEM (assistant) message */
 .message.assistant.latest {
-  animation: systemGlitch 8s infinite;
+  animation: systemGlitch 9s infinite;
 }
 
 @keyframes systemGlitch {
-  0%, 90%, 100% {
+  0%, 93%, 100% {
     text-shadow: none;
   }
-  92% {
+  94% {
     text-shadow: 1px 0 #ff0000, -1px 0 #ffffff;
   }
-  94% {
+  95.5% {
     text-shadow: -1px 0 #ff0000, 1px 0 #ffffff;
   }
-  96% {
+  97% {
     text-shadow: 1px 0 #ffffff, -1px 0 #ff0000;
   }
 }

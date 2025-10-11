@@ -31,7 +31,7 @@
   text-align: left;
   opacity: 0;
   transform: translateY(5px);
-  animation: terminalIn 0.1s ease-out forwards;
+  animation: terminalIn 0.1s ease-out forwards, terminalGlitch 9s infinite;
   color: #ffffff;
   white-space: nowrap;
   font-family: inherit;
@@ -115,5 +115,21 @@
   }
   100% {
     opacity: 0;
+  }
+}
+
+/* Red-only glitch effect for loading text */
+@keyframes terminalGlitch {
+  0%, 93%, 100% {
+    text-shadow: none;
+  }
+  94% {
+    text-shadow: 1px 0 #ff0000, -1px 0 #ffffff;
+  }
+  95.5% {
+    text-shadow: -1px 0 #ff0000, 1px 0 #ffffff;
+  }
+  97% {
+    text-shadow: 1px 0 #ffffff, -1px 0 #ff0000;
   }
 }
