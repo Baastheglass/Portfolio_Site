@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import styles from "./home.module.css";
-import { welcomeMessage } from '../utils/constants';
+import { welcomeMessage, API_BASE_URL } from '../utils/constants';
 
 export default function Home() {
   const neofetchBanner = `
@@ -136,7 +136,7 @@ export default function Home() {
 
     try {
       // Call the backend search endpoint
-      const response = await fetch('http://localhost:8000/search', {
+      const response = await fetch(`${API_BASE_URL}/search`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

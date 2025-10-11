@@ -1,3 +1,6 @@
+// Backend API Configuration
+export const API_BASE_URL = 'http://localhost:8000';
+
 export const welcomeMessage = `I am an aspiring AI Engineer and a Computer Science student at FAST-NUCES, passionate about building intelligent systems, backend services, and AI-powered tools. I have strong proficiency in Python, C++, Node.js, C, and Assembly, and my work spans AI development, DevOps, web automation, and full-stack engineering.
 
 Currently, I work at Axonbuild as a DevOps/AI Engineer, where I have:
