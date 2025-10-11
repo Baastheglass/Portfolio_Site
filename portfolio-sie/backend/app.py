@@ -10,7 +10,7 @@ app = fastapi.FastAPI()
 # Add CORS middleware to allow frontend requests
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],  # Next.js default ports
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "https://baasil.vercel.app"],  # Next.js default ports
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
