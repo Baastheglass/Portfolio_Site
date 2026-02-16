@@ -1,20 +1,24 @@
+'use client'
+
+import dynamic from 'next/dynamic'
 import styles from "./page.module.css";
+
+const VintageComputer = dynamic(() => import('./components/VintageComputer'), {
+  ssr: false,
+  loading: () => <div className={styles.canvasLoader}>Loading 3D Scene...</div>
+})
 
 export default function Home() {
   return (
     <div className={styles.container}>
       {/* Main Hero - Introduction */}
       <section className={styles.hero}>
+        <div className={styles.canvasContainer}>
+          <VintageComputer />
+        </div>
         <div className={styles.heroContent}>
           <h1 className={styles.mainTitle}>Baasil</h1>
           <p className={styles.mainSubtitle}>Full Stack Developer & AI Enthusiast</p>
-          <p className={styles.mainDescription}>
-            Building innovative solutions with modern web technologies and artificial intelligence
-          </p>
-          <div className={styles.scrollIndicator}>
-            <span>Scroll to explore projects</span>
-            <span className={styles.arrow}>↓</span>
-          </div>
         </div>
       </section>
 

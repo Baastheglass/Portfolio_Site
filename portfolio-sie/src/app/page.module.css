@@ -12,64 +12,55 @@
   text-align: center;
   padding: 4rem 2rem;
   position: relative;
+  overflow: hidden;
+}
+
+.canvasContainer {
+  position: absolute;
+  top: 50%;
+  right: 10%;
+  transform: translateY(-50%);
+  width: 500px;
+  height: 500px;
+  opacity: 1;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.canvasLoader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--light-blue);
+  font-size: 1.2rem;
 }
 
 .heroContent {
   animation: fadeInUp 1s ease-out;
-  max-width: 900px;
+  max-width: 600px;
   margin: 0 auto;
+  margin-left: 10%;
+  position: relative;
+  z-index: 2;
+  text-align: left;
 }
 
 .mainTitle {
-  font-size: 5rem;
+  font-size: 6rem;
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   color: var(--text-primary);
-  text-shadow: 0 2px 20px rgba(74, 123, 167, 0.5);
-  letter-spacing: -2px;
+  text-shadow: 0 4px 30px rgba(74, 123, 167, 0.6);
+  letter-spacing: -3px;
+  line-height: 1;
 }
 
 .mainSubtitle {
-  font-size: 2rem;
-  font-weight: 500;
-  margin-bottom: 1.5rem;
-  color: var(--light-blue);
-}
-
-.mainDescription {
-  font-size: 1.3rem;
-  color: var(--text-secondary);
-  max-width: 700px;
-  margin: 0 auto 3rem;
-  line-height: 1.8;
-}
-
-.scrollIndicator {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 4rem;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  animation: bounce 2s infinite;
-}
-
-.arrow {
   font-size: 1.5rem;
-  color: var(--light-blue);
-}
-
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-10px);
-  }
-  60% {
-    transform: translateY(-5px);
-  }
+  font-weight: 300;
+  color: var(--text-secondary);
+  opacity: 0.9;
 }
 
 /* Project Hero Sections */
@@ -81,11 +72,11 @@
   padding: 6rem 2rem;
   border-top: 1px solid rgba(74, 123, 167, 0.2);
   position: relative;
-  background: linear-gradient(135deg, rgba(10, 25, 41, 0.9) 0%, rgba(26, 47, 66, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(5, 16, 26, 0.95) 0%, rgba(10, 25, 41, 0.95) 100%);
 }
 
 .projectHero:nth-child(even) {
-  background: linear-gradient(135deg, rgba(26, 47, 66, 0.9) 0%, rgba(42, 79, 111, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(10, 25, 41, 0.95) 0%, rgba(26, 47, 66, 0.95) 100%);
 }
 
 .projectHeroContent {
@@ -228,7 +219,7 @@
   text-align: center;
   padding: 6rem 2rem;
   border-top: 1px solid rgba(74, 123, 167, 0.2);
-  background: linear-gradient(135deg, rgba(42, 79, 111, 0.9) 0%, rgba(10, 25, 41, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(10, 25, 41, 0.95) 0%, rgba(5, 16, 26, 0.95) 100%);
 }
 
 .contactTitle {
@@ -302,17 +293,41 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .canvasContainer {
+    width: 400px;
+    height: 400px;
+    right: 5%;
+  }
+
+  .heroContent {
+    margin-left: 5%;
+  }
+}
+
 @media (max-width: 768px) {
   .mainTitle {
-    font-size: 3rem;
+    font-size: 4rem;
   }
 
   .mainSubtitle {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
   }
 
-  .mainDescription {
-    font-size: 1.1rem;
+  .heroContent {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .canvasContainer {
+    position: absolute;
+    top: 20%;
+    right: 50%;
+    transform: translate(50%, -50%);
+    width: 300px;
+    height: 300px;
+    opacity: 0.6;
   }
 
   .projectNumber {
@@ -363,7 +378,11 @@
 
 @media (max-width: 480px) {
   .mainTitle {
-    font-size: 2.5rem;
+    font-size: 3rem;
+  }
+
+  .mainSubtitle {
+    font-size: 1rem;
   }
 
   .projectTitle {
@@ -376,5 +395,12 @@
 
   .projectNumber {
     font-size: 3rem;
+  }
+
+  .canvasContainer {
+    width: 250px;
+    height: 250px;
+    top: 15%;
+    opacity: 0.5;
   }
 }
