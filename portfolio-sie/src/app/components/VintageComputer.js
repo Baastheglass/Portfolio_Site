@@ -3,7 +3,6 @@
 import { useRef } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { PerspectiveCamera, Text } from '@react-three/drei'
-import * as THREE from 'three'
 
 function MacintoshComputer() {
   const computerRef = useRef()
@@ -13,19 +12,20 @@ function MacintoshComputer() {
   useFrame((state, delta) => {
     timeRef.current += delta
     
-    // Bob up and down animation
+    // Smooth bob animation
     if (computerRef.current) {
-      computerRef.current.position.y = Math.sin(timeRef.current * 1.5) * 0.15
+      computerRef.current.position.y = Math.sin(timeRef.current * 0.8) * 0.15
     }
     
-    // Scroll the code text
+    // Scroll code text
     if (codeRef.current) {
-      codeRef.current.position.y = ((timeRef.current * 0.3) % 2) - 1
+      const scrollRange = 0.8
+      codeRef.current.position.y = 0.5 - ((timeRef.current * 0.15) % scrollRange)
     }
   })
 
   return (
-    <group ref={computerRef} position={[0, 0, 0]} scale={1.8}>
+    <group ref={computerRef} position={[0, 0, 0]} rotation={[0, -0.2, 0]} scale={1.5}>
       {/* Monitor - Box on top */}
       <group position={[0, 0.8, 0]}>
         {/* Monitor Body - Beige/Cream */}
@@ -50,38 +50,51 @@ function MacintoshComputer() {
           />
         </mesh>
 
-        {/* Code Text on Screen */}
-        <group ref={codeRef} position={[0, 0.05, 0.76]}>
-          <Text
-            position={[-0.6, 0.5, 0]}
-            fontSize={0.045}
-            color="#00ff00"
-            anchorX="left"
-            anchorY="top"
-            maxWidth={1.3}
-            font="/fonts/monospace.woff"
-          >
-            {`function init() {
-  const scene = new THREE.Scene()
-  const camera = new PerspectiveCamera()
-  renderer.render(scene, camera)
-}
+        {/* Code Text on Screen - with proper clipping */}
+        <group position={[0, 0.05, 0.76]}>
+          {/* Clipping plane mesh */}
+          <mesh position={[0, 0, 0]}>
+            <planeGeometry args={[1.4, 1.1]} />
+            <meshBasicMaterial transparent opacity={0} />
+          </mesh>
+          
+          <group ref={codeRef}>
+            <Text
+              position={[-0.63, 0, 0]}
+              fontSize={0.04}
+              color="#00ff00"
+              anchorX="left"
+              anchorY="top"
+              maxWidth={1.2}
+              lineHeight={1.3}
+              clipRect={[-0.7, -0.55, 0.7, 0.55]}
+            >
+              {`> Loading system...
+> Initializing modules...
 
-class Portfolio {
-  constructor() {
-    this.projects = []
-    this.skills = ['React', 'Three.js']
-  }
+function Portfolio() {
+  const projects = [
+    'AI Chat App',
+    'E-Commerce Platform', 
+    'Data Visualizer',
+    'Task Manager'
+  ]
   
-  render() {
-    return this.projects.map(p => p.show())
+  this.render = () => {
+    projects.forEach(p => {
+      console.log(p)
+    })
   }
 }
 
 const app = new Portfolio()
-app.init()
-console.log('System ready...')`}
-          </Text>
+app.render()
+
+> System initialized
+> Ready for deployment
+> All systems operational`}
+            </Text>
+          </group>
         </group>
 
         {/* Ventilation slots on top */}
@@ -160,52 +173,33 @@ console.log('System ready...')`}
 function Scene() {
   return (
     <>
-      <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
+      <PerspectiveCamera makeDefault position={[0, 0.5, 6]} fov={45} />
 
-      {/* Enhanced lighting for better visibility */}
-      <ambientLight intensity={0.5} />
+      {/* Lighting */}
+      <ambientLight intensity={0.6} />
       <directionalLight 
-        position={[3, 4, 5]} 
-        intensity={1.5}
-        castShadow
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
-      />
-      <pointLight position={[-3, 2, 3]} intensity={0.5} color="#4a7ba7" />
-      <pointLight position={[0, 1, 3]} intensity={0.4} color="#00ff88" />
-      <spotLight
-        position={[0, 3, 3]}
-        angle={0.6}
-        penumbra={0.5}
-        intensity={0.8}
-        color="#e3f2fd"
+        position={[5, 5, 5]} 
+        intensity={1.2}
         castShadow
       />
+      <pointLight position={[-3, 2, 3]} intensity={0.4} color="#4a7ba7" />
+      <pointLight position={[2, 1, 4]} intensity={0.3} color="#00ff88" />
 
       {/* The Macintosh Computer */}
       <MacintoshComputer />
-
-      {/* Simple ground plane for depth */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.5, 0]} receiveShadow>
-        <planeGeometry args={[10, 10]} />
-        <meshStandardMaterial 
-          color="#05101a" 
-          roughness={0.9}
-          metalness={0.1}
-          transparent
-          opacity={0.3}
-        />
-      </mesh>
     </>
   )
 }
 
 export default function VintageComputer() {
   return (
-    <div style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}>
-      <Canvas shadows camera={{ position: [0, 0, 5], fov: 50 }}>
-        <Scene />
-      </Canvas>
-    </div>
+    <Canvas 
+      shadows 
+      camera={{ position: [0, 0.5, 6], fov: 45 }}
+      gl={{ alpha: true, antialias: true }}
+      style={{ background: 'transparent' }}
+    >
+      <Scene />
+    </Canvas>
   )
 }
