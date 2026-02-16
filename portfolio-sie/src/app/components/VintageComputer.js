@@ -1,205 +1,518 @@
-'use client'
+'use client';
 
-import { useRef } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { PerspectiveCamera, Text } from '@react-three/drei'
+import { useEffect, useRef } from 'react';
+import * as THREE from 'three';
 
-function MacintoshComputer() {
-  const computerRef = useRef()
-  const codeRef = useRef()
-  const timeRef = useRef(0)
+// Global instance counter
+let globalInstanceCounter = 0;
 
-  useFrame((state, delta) => {
-    timeRef.current += delta
-    
-    // Smooth bob animation
-    if (computerRef.current) {
-      computerRef.current.position.y = Math.sin(timeRef.current * 0.8) * 0.15
-    }
-    
-    // Scroll code text
-    if (codeRef.current) {
-      const scrollRange = 0.8
-      codeRef.current.position.y = 0.5 - ((timeRef.current * 0.15) % scrollRange)
-    }
-  })
+export default function VintageMac() {
+  const mountRef = useRef(null);
+  const rendererRef = useRef(null);
+  const isInitializedRef = useRef(false);
+  const sceneRef = useRef(null);
+  const textureRef = useRef(null);
 
-  return (
-    <group ref={computerRef} position={[0, 0, 0]} rotation={[0, -0.2, 0]} scale={1.5}>
-      {/* Monitor - Box on top */}
-      <group position={[0, 0.8, 0]}>
-        {/* Monitor Body - Beige/Cream */}
-        <mesh castShadow>
-          <boxGeometry args={[1.8, 1.6, 1.4]} />
-          <meshStandardMaterial color="#F5F5DC" roughness={0.5} metalness={0.1} />
-        </mesh>
-
-        {/* Screen Frame - Dark bezel */}
-        <mesh position={[0, 0.05, 0.71]} castShadow>
-          <boxGeometry args={[1.6, 1.3, 0.05]} />
-          <meshStandardMaterial color="#2a2a2a" roughness={0.4} metalness={0.3} />
-        </mesh>
-
-        {/* Black Screen */}
-        <mesh position={[0, 0.05, 0.74]}>
-          <boxGeometry args={[1.5, 1.2, 0.02]} />
-          <meshStandardMaterial 
-            color="#000000" 
-            roughness={0.2}
-            metalness={0.8}
-          />
-        </mesh>
-
-        {/* Code Text on Screen - with proper clipping */}
-        <group position={[0, 0.05, 0.76]}>
-          {/* Clipping plane mesh */}
-          <mesh position={[0, 0, 0]}>
-            <planeGeometry args={[1.4, 1.1]} />
-            <meshBasicMaterial transparent opacity={0} />
-          </mesh>
-          
-          <group ref={codeRef}>
-            <Text
-              position={[-0.63, 0, 0]}
-              fontSize={0.04}
-              color="#00ff00"
-              anchorX="left"
-              anchorY="top"
-              maxWidth={1.2}
-              lineHeight={1.3}
-              clipRect={[-0.7, -0.55, 0.7, 0.55]}
-            >
-              {`> Loading system...
-> Initializing modules...
-
-function Portfolio() {
-  const projects = [
-    'AI Chat App',
-    'E-Commerce Platform', 
-    'Data Visualizer',
-    'Task Manager'
-  ]
+  // Add instance tracking with truly unique IDs
+  const instanceNumber = ++globalInstanceCounter;
+  const instanceId = useRef(`${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
   
-  this.render = () => {
-    projects.forEach(p => {
-      console.log(p)
-    })
+  // Reduced logging - only show if multiple instances
+  if (globalInstanceCounter > 1) {
+    console.log(`[VintageMac #${instanceNumber}] Multiple instances detected! Total: ${globalInstanceCounter}`);
   }
-}
 
-const app = new Portfolio()
-app.render()
+  useEffect(() => {
+    // Prevent double initialization in React Strict Mode
+    if (!mountRef.current || rendererRef.current || isInitializedRef.current) {
+      return;
+    }
+    
+    // Check if mount point already has children (another renderer)
+    if (mountRef.current.children.length > 0) {
+      console.log(`[VintageMac #${instanceNumber}] Mount point already occupied, skipping`);
+      return;
+    }
+    
+    isInitializedRef.current = true;
 
-> System initialized
-> Ready for deployment
-> All systems operational`}
-            </Text>
-          </group>
-        </group>
+    // Scene setup with transparent background
+    const scene = new THREE.Scene();
+    sceneRef.current = scene;
+    // No background color for transparency
+    const camera = new THREE.PerspectiveCamera(
+      32,
+      mountRef.current.clientWidth / mountRef.current.clientHeight,
+      0.1,
+      1000
+    );
+    camera.position.set(4, 2, 7);
+    camera.lookAt(0, 0.3, 0);
 
-        {/* Ventilation slots on top */}
-        {[...Array(6)].map((_, i) => (
-          <mesh key={`vent-top-${i}`} position={[-0.6 + i * 0.2, 0.8, 0.3]} castShadow>
-            <boxGeometry args={[0.15, 0.03, 0.6]} />
-            <meshStandardMaterial color="#333333" roughness={0.8} />
-          </mesh>
-        ))}
+    const renderer = new THREE.WebGLRenderer({ 
+      antialias: true,
+      alpha: true // Enable transparency
+    });
+        renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
+    renderer.setClearColor(0x000000, 0); // Fully transparent background
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    mountRef.current.appendChild(renderer.domElement);
+    rendererRef.current = renderer;
 
-        {/* Floppy Drive Slot */}
-        <mesh position={[0, -0.5, 0.71]} castShadow>
-          <boxGeometry args={[0.6, 0.08, 0.03]} />
-          <meshStandardMaterial color="#1a1a1a" roughness={0.8} />
-        </mesh>
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
+    scene.add(ambientLight);
 
-        {/* Power indicator LED */}
-        <mesh position={[-0.7, -0.7, 0.71]} castShadow>
-          <circleGeometry args={[0.03, 16]} />
-          <meshStandardMaterial 
-            color="#00ff00" 
-            emissive="#00ff00" 
-            emissiveIntensity={0.8}
-          />
-        </mesh>
-      </group>
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.7);
+    directionalLight.position.set(8, 10, 8);
+    directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.width = 2048;
+    directionalLight.shadow.mapSize.height = 2048;
+    scene.add(directionalLight);
 
-      {/* Keyboard Base - Below monitor */}
-      <group position={[0, -0.5, 0.2]}>
-        {/* Main keyboard body */}
-        <mesh castShadow>
-          <boxGeometry args={[1.8, 0.25, 1]} />
-          <meshStandardMaterial color="#E8DCC4" roughness={0.5} metalness={0.1} />
-        </mesh>
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.4);
+    fillLight.position.set(-6, 4, -6);
+    scene.add(fillLight);
 
-        {/* Keys */}
-        {[...Array(40)].map((_, i) => {
-          const row = Math.floor(i / 10)
-          const col = i % 10
-          return (
-            <mesh 
-              key={i} 
-              position={[
-                -0.75 + col * 0.16,
-                0.14,
-                -0.35 + row * 0.16
-              ]}
-              castShadow
-            >
-              <boxGeometry args={[0.13, 0.08, 0.13]} />
-              <meshStandardMaterial color="#F5F5DC" roughness={0.3} metalness={0.2} />
-            </mesh>
-          )
-        })}
+    // Create main group
+    const macGroup = new THREE.Group();
+    macGroup.rotation.y = -0.3;
+    macGroup.rotation.x = -0.08;
 
-        {/* Spacebar */}
-        <mesh position={[0, 0.14, 0.35]} castShadow>
-          <boxGeometry args={[0.8, 0.08, 0.13]} />
-          <meshStandardMaterial color="#F5F5DC" roughness={0.3} metalness={0.2} />
-        </mesh>
+    // Colors - Classic Mac beige
+    const beige = new THREE.Color(0xf4ead8);
+    const beigeLight = new THREE.Color(0xfaf6ec);
+    const beigeDark = new THREE.Color(0xe0d4c0);
+    const beigeDarker = new THREE.Color(0xc8bca8);
 
-        {/* Keyboard feet */}
-        <mesh position={[-0.7, -0.13, -0.4]} castShadow>
-          <boxGeometry args={[0.1, 0.02, 0.1]} />
-          <meshStandardMaterial color="#C4B5A0" roughness={0.6} />
-        </mesh>
-        <mesh position={[0.7, -0.13, -0.4]} castShadow>
-          <boxGeometry args={[0.1, 0.02, 0.1]} />
-          <meshStandardMaterial color="#C4B5A0" roughness={0.6} />
-        </mesh>
-      </group>
-    </group>
-  )
-}
+    // ========== MONITOR UNIT ==========
+    
+    // Main monitor housing with subdivisions for smoother look
+    const monitorGeometry = new THREE.BoxGeometry(1.15, 1.35, 1.1, 12, 12, 12);
+    const monitorMaterial = new THREE.MeshStandardMaterial({
+      color: beige,
+      roughness: 0.35,
+      metalness: 0.02,
+    });
+    const monitor = new THREE.Mesh(monitorGeometry, monitorMaterial);
+    monitor.position.set(0, 1.05, -0.35);
+    monitor.castShadow = true;
+    monitor.receiveShadow = true;
+    macGroup.add(monitor);
 
-function Scene() {
+    // Front face panel with subdivisions for smooth look
+    const frontFaceGeometry = new THREE.BoxGeometry(1.08, 1.28, 0.08, 10, 10, 10);
+    const frontFaceMaterial = new THREE.MeshStandardMaterial({
+      color: beigeLight,
+      roughness: 0.4,
+    });
+    const frontFace = new THREE.Mesh(frontFaceGeometry, frontFaceMaterial);
+    frontFace.position.set(0, 1.05, 0.22);
+    macGroup.add(frontFace);
+
+    // Screen bezel with subdivisions
+    const bezelGeometry = new THREE.BoxGeometry(0.95, 0.78, 0.08, 8, 8, 8);
+    const bezelMaterial = new THREE.MeshStandardMaterial({
+      color: beigeDark,
+      roughness: 0.5,
+    });
+    const bezel = new THREE.Mesh(bezelGeometry, bezelMaterial);
+    bezel.position.set(0, 1.15, 0.26);
+    macGroup.add(bezel);
+
+    // SCREEN with scrolling code - BIGGER AND CLEARER
+    const canvas = document.createElement('canvas');
+    canvas.width = 768;
+    canvas.height = 768;
+    const ctx = canvas.getContext('2d');
+    
+    // Code content
+    const codeLines = [
+      '10 PRINT "HELLO WORLD"',
+      '20 FOR I = 1 TO 10',
+      '30 PRINT "MACINTOSH"',
+      '40 NEXT I',
+      '50 END',
+      '',
+      'function initMac() {',
+      '  var system = new OS();',
+      '  system.boot();',
+      '  return system;',
+      '}',
+      '',
+      '#include <stdio.h>',
+      'int main() {',
+      '  printf("Classic Mac");',
+      '  return 0;',
+      '}',
+      '',
+      'mov ax, 0x0003',
+      'int 0x10',
+      'mov ah, 0x09',
+      'lea dx, [message]',
+      'int 0x21',
+      '',
+      'const vintage = true;',
+      'let macintosh = {',
+      '  year: 1984,',
+      '  model: "128K",',
+      '  screen: "9-inch"',
+      '};',
+      '',
+      '10 INPUT "NAME"; N$',
+      '20 PRINT "HELLO "; N$',
+      '30 GOTO 10',
+    ];
+    
+    let scrollOffset = 0;
+    const fontSize = 22;
+    const lineHeight = 28;
+    
+    const texture = new THREE.CanvasTexture(canvas);
+    textureRef.current = texture;
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+    texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    
+    const screenGeometry = new THREE.BoxGeometry(0.87, 0.72, 0.03);
+    const screenMaterial = new THREE.MeshStandardMaterial({
+      map: texture,
+      emissive: new THREE.Color(0x1a1a1a),
+      emissiveIntensity: 0.2,
+      roughness: 0.25,
+    });
+    const screen = new THREE.Mesh(screenGeometry, screenMaterial);
+    screen.position.set(0, 1.15, 0.30);
+    macGroup.add(screen);
+    
+    // Draw code function
+    const drawCode = () => {
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `${fontSize}px "Courier New", monospace`;
+      
+      const startLine = Math.floor(scrollOffset / lineHeight);
+      const yOffset = -(scrollOffset % lineHeight);
+      
+      for (let i = 0; i < 40; i++) {
+        const lineIndex = (startLine + i) % codeLines.length;
+        const y = yOffset + i * lineHeight + 30;
+        ctx.fillText(codeLines[lineIndex], 15, y);
+      }
+      
+      scrollOffset += 1.2;
+      if (scrollOffset > codeLines.length * lineHeight) {
+        scrollOffset = 0;
+      }
+      
+      texture.needsUpdate = true;
+    };
+
+    // Apple logo area below screen
+    const logoGeometry = new THREE.BoxGeometry(0.19, 0.19, 0.02);
+    const logoMaterial = new THREE.MeshStandardMaterial({
+      color: beigeDarker,
+      roughness: 0.4,
+    });
+    const logo = new THREE.Mesh(logoGeometry, logoMaterial);
+    logo.position.set(0, 0.52, 0.26);
+    macGroup.add(logo);
+
+    // Floppy disk slot
+    const slotGeometry = new THREE.BoxGeometry(0.30, 0.022, 0.02);
+    const slotMaterial = new THREE.MeshStandardMaterial({
+      color: 0x333333,
+      roughness: 0.85,
+    });
+    const slot = new THREE.Mesh(slotGeometry, slotMaterial);
+    slot.position.set(0, 0.73, 0.26);
+    macGroup.add(slot);
+
+    // Top ventilation slots
+    for (let i = 0; i < 9; i++) {
+      const ventGeometry = new THREE.BoxGeometry(0.075, 0.02, 0.80);
+      const ventMaterial = new THREE.MeshStandardMaterial({
+        color: 0x666666,
+        roughness: 0.9,
+      });
+      const vent = new THREE.Mesh(ventGeometry, ventMaterial);
+      vent.position.set(-0.35 + i * 0.088, 1.73, -0.35);
+      macGroup.add(vent);
+    }
+
+    // Handle cutout on back top
+    const handleGeometry = new THREE.BoxGeometry(0.18, 0.045, 0.12);
+    const handleMaterial = new THREE.MeshStandardMaterial({
+      color: beigeDarker,
+      roughness: 0.6,
+    });
+    const handle = new THREE.Mesh(handleGeometry, handleMaterial);
+    handle.position.set(0, 1.73, -0.8);
+    macGroup.add(handle);
+
+    // Monitor base/stand with rounded look
+    const monitorBaseGeometry = new THREE.BoxGeometry(1.25, 0.20, 1.0, 8, 8, 8);
+    const monitorBaseMaterial = new THREE.MeshStandardMaterial({
+      color: beige,
+      roughness: 0.4,
+    });
+    const monitorBase = new THREE.Mesh(monitorBaseGeometry, monitorBaseMaterial);
+    monitorBase.position.set(0, 0.28, -0.35);
+    monitorBase.castShadow = true;
+    monitorBase.receiveShadow = true;
+    macGroup.add(monitorBase);
+
+    // ========== KEYBOARD PLATFORM ==========
+    
+    // Main keyboard base platform with rounded edges using RoundedBoxGeometry approach
+    const keyboardPlatformGeometry = new THREE.BoxGeometry(1.80, 0.20, 1.05, 8, 8, 8);
+    const keyboardPlatformMaterial = new THREE.MeshStandardMaterial({
+      color: beige,
+      roughness: 0.4,
+    });
+    const keyboardPlatform = new THREE.Mesh(keyboardPlatformGeometry, keyboardPlatformMaterial);
+    keyboardPlatform.position.set(0, 0.08, 0.68);
+    keyboardPlatform.castShadow = true;
+    keyboardPlatform.receiveShadow = true;
+    macGroup.add(keyboardPlatform);
+
+    // Recessed keyboard surface (angled)
+    const keyboardSurfaceGeometry = new THREE.BoxGeometry(1.65, 0.12, 0.80, 6, 6, 6);
+    const keyboardSurfaceMaterial = new THREE.MeshStandardMaterial({
+      color: beigeDark,
+      roughness: 0.55,
+    });
+    const keyboardSurface = new THREE.Mesh(keyboardSurfaceGeometry, keyboardSurfaceMaterial);
+    keyboardSurface.position.set(0, 0.22, 0.73);
+    keyboardSurface.rotation.x = -0.12;
+    keyboardSurface.castShadow = true;
+    macGroup.add(keyboardSurface);
+
+    // Grooves/vents on front edge
+    for (let i = 0; i < 22; i++) {
+      const grooveGeometry = new THREE.BoxGeometry(0.028, 0.18, 0.042);
+      const grooveMaterial = new THREE.MeshStandardMaterial({
+        color: 0x777777,
+        roughness: 0.75,
+      });
+      const grooveFront = new THREE.Mesh(grooveGeometry, grooveMaterial);
+      grooveFront.position.set(-0.57 + i * 0.055, 0.08, 1.19);
+      macGroup.add(grooveFront);
+    }
+
+    // Side grooves
+    for (let i = 0; i < 17; i++) {
+      const grooveGeometry = new THREE.BoxGeometry(0.028, 0.18, 0.042);
+      const grooveMaterial = new THREE.MeshStandardMaterial({
+        color: 0x777777,
+        roughness: 0.75,
+      });
+      
+      const grooveLeft = new THREE.Mesh(grooveGeometry, grooveMaterial);
+      grooveLeft.position.set(-0.91, 0.08, 0.25 + i * 0.055);
+      macGroup.add(grooveLeft);
+      
+      const grooveRight = new THREE.Mesh(grooveGeometry, grooveMaterial);
+      grooveRight.position.set(0.91, 0.08, 0.25 + i * 0.055);
+      macGroup.add(grooveRight);
+    }
+
+    // ========== KEYBOARD KEYS ==========
+    
+    const keyMaterial = new THREE.MeshStandardMaterial({
+      color: 0xfffffb,
+      roughness: 0.10,
+      metalness: 0.12,
+    });
+    
+    // LARGER, more prominent keys
+    const keyGeometry = new THREE.CylinderGeometry(0.038, 0.042, 0.055, 32);
+    
+    // Key rows
+    const rows = [
+      { keys: 13, startX: -0.455 }, // Number row
+      { keys: 13, startX: -0.475 }, // QWERTY
+      { keys: 12, startX: -0.445 }, // ASDF
+      { keys: 11, startX: -0.415 }, // ZXCV
+    ];
+    
+    rows.forEach((row, rowIndex) => {
+      for (let i = 0; i < row.keys; i++) {
+        const key = new THREE.Mesh(keyGeometry, keyMaterial);
+        const zPos = 0.95 - rowIndex * 0.078;
+        const yPos = 0.28 - rowIndex * 0.009;
+        
+        key.position.x = row.startX + i * 0.077;
+        key.position.y = yPos;
+        key.position.z = zPos;
+        key.rotation.x = -0.12;
+        key.castShadow = true;
+        macGroup.add(key);
+      }
+    });
+    
+    // Spacebar - BIGGER
+    const spacebarGeometry = new THREE.CylinderGeometry(0.038, 0.042, 0.65, 32);
+    const spacebar = new THREE.Mesh(spacebarGeometry, keyMaterial);
+    spacebar.rotation.z = Math.PI / 2;
+    spacebar.rotation.y = -0.12;
+    spacebar.position.set(0, 0.25, 0.71);
+    spacebar.castShadow = true;
+    macGroup.add(spacebar);
+    
+    // Special keys (slightly off-white) - LARGER
+    const specialKeyMaterial = new THREE.MeshStandardMaterial({
+      color: 0xfaf9f5,
+      roughness: 0.12,
+      metalness: 0.12,
+    });
+    
+    const modifierKeyGeometry = new THREE.CylinderGeometry(0.040, 0.044, 0.055, 32);
+    
+    // Modifier keys around spacebar
+    const modifierPositions = [
+      { x: -0.32, z: 0.71 },
+      { x: -0.40, z: 0.71 },
+      { x: 0.32, z: 0.71 },
+      { x: 0.40, z: 0.71 }
+    ];
+    
+    modifierPositions.forEach(pos => {
+      const modKey = new THREE.Mesh(modifierKeyGeometry, specialKeyMaterial);
+      modKey.position.set(pos.x, 0.25, pos.z);
+      modKey.rotation.x = -0.12;
+      modKey.castShadow = true;
+      macGroup.add(modKey);
+    });
+    
+    // Enter key (LARGER)
+    const enterKeyGeometry = new THREE.CylinderGeometry(0.044, 0.048, 0.055, 32);
+    const enterKey = new THREE.Mesh(enterKeyGeometry, specialKeyMaterial);
+    enterKey.position.set(0.565, 0.26, 0.71);
+    enterKey.rotation.x = -0.12;
+    enterKey.castShadow = true;
+    macGroup.add(enterKey);
+    
+    // Shift keys - LARGER
+    const shiftKeyGeometry = new THREE.CylinderGeometry(0.042, 0.046, 0.055, 32);
+    
+    const leftShift = new THREE.Mesh(shiftKeyGeometry, specialKeyMaterial);
+    leftShift.position.set(-0.535, 0.253, 0.476);
+    leftShift.rotation.x = -0.12;
+    leftShift.castShadow = true;
+    macGroup.add(leftShift);
+    
+    const rightShift = new THREE.Mesh(shiftKeyGeometry, specialKeyMaterial);
+    rightShift.position.set(0.535, 0.253, 0.476);
+    rightShift.rotation.x = -0.12;
+    rightShift.castShadow = true;
+    macGroup.add(rightShift);
+
+    scene.add(macGroup);
+
+    // Ground plane
+    const groundGeometry = new THREE.PlaneGeometry(25, 25);
+    const groundMaterial = new THREE.ShadowMaterial({ opacity: 0.18 });
+    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -0.02;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // Animation loop
+    let time = 0;
+    let lastCodeUpdate = 0;
+    const codeUpdateInterval = 20;
+    
+    const animate = () => {
+      requestAnimationFrame(animate);
+      time += 0.01;
+      
+      const currentTime = Date.now();
+      if (currentTime - lastCodeUpdate > codeUpdateInterval) {
+        drawCode();
+        lastCodeUpdate = currentTime;
+      }
+
+      // Gentle bobbing
+      macGroup.position.y = Math.sin(time) * 0.10;
+      
+      // Slight rotation
+      macGroup.rotation.y = -0.3 + Math.sin(time * 0.5) * 0.035;
+
+      renderer.render(scene, camera);
+    };
+
+    animate();
+
+    // Resize handler
+    const handleResize = () => {
+      if (!mountRef.current) return;
+      camera.aspect = mountRef.current.clientWidth / mountRef.current.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => {
+      isInitializedRef.current = false;
+      
+      window.removeEventListener('resize', handleResize);
+      
+      // More robust renderer cleanup
+      if (rendererRef.current) {
+        // Stop animation loop
+        rendererRef.current.setAnimationLoop(null);
+        
+        // Remove from DOM
+        if (mountRef.current && rendererRef.current.domElement && mountRef.current.contains(rendererRef.current.domElement)) {
+          mountRef.current.removeChild(rendererRef.current.domElement);
+        }
+        
+        // Dispose renderer
+        rendererRef.current.dispose();
+        rendererRef.current = null;
+      }
+      
+      // Dispose all geometries and materials
+      if (sceneRef.current) {
+        sceneRef.current.traverse((object) => {
+          if (object.geometry) {
+            object.geometry.dispose();
+          }
+          if (object.material) {
+            if (Array.isArray(object.material)) {
+              object.material.forEach(material => material.dispose());
+            } else {
+              object.material.dispose();
+            }
+          }
+        });
+        sceneRef.current = null;
+      }
+      
+      // Dispose texture
+      if (textureRef.current) {
+        textureRef.current.dispose();
+        textureRef.current = null;
+      }
+    };
+  }, []);
+
   return (
-    <>
-      <PerspectiveCamera makeDefault position={[0, 0.5, 6]} fov={45} />
-
-      {/* Lighting */}
-      <ambientLight intensity={0.6} />
-      <directionalLight 
-        position={[5, 5, 5]} 
-        intensity={1.2}
-        castShadow
-      />
-      <pointLight position={[-3, 2, 3]} intensity={0.4} color="#4a7ba7" />
-      <pointLight position={[2, 1, 4]} intensity={0.3} color="#00ff88" />
-
-      {/* The Macintosh Computer */}
-      <MacintoshComputer />
-    </>
-  )
-}
-
-export default function VintageComputer() {
-  return (
-    <Canvas 
-      shadows 
-      camera={{ position: [0, 0.5, 6], fov: 45 }}
-      gl={{ alpha: true, antialias: true }}
-      style={{ background: 'transparent' }}
-    >
-      <Scene />
-    </Canvas>
-  )
+    <div 
+      ref={mountRef} 
+      style={{ 
+        width: '100%', 
+        height: '100%', 
+        minHeight: '500px',
+        background: 'transparent'
+      }} 
+    />
+  );
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { useEffect } from 'react'
 import styles from "./page.module.css";
 
 const VintageComputer = dynamic(() => import('./components/VintageComputer'), {
@@ -9,12 +10,16 @@ const VintageComputer = dynamic(() => import('./components/VintageComputer'), {
 })
 
 export default function Home() {
+  useEffect(() => {
+    // Component lifecycle complete
+  }, [])
+
   return (
     <div className={styles.container}>
       {/* Main Hero - Introduction */}
       <section className={styles.hero}>
         <div className={styles.canvasContainer}>
-          <VintageComputer />
+          <VintageComputer key="single-vintage-mac" />
         </div>
         <div className={styles.heroContent}>
           <h1 className={styles.mainTitle}>Baasil</h1>
