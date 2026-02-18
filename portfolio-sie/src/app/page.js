@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { useEffect } from 'react'
+import MessageBubble from './components/MessageBubble'
 import styles from "./page.module.css";
 
 const VintageComputer = dynamic(() => import('./components/VintageComputer'), {
@@ -37,6 +38,26 @@ export default function Home() {
             technology and large language models. Features real-time responses, context-aware conversations, 
             and seamless integration with knowledge bases.
           </p>
+          
+          {/* Floating Message Demo */}
+          <div className={styles.floatingMessagesContainer}>
+            <div className={styles.floatingMessageLeft}>
+              <MessageBubble
+                message="How does your RAG system retrieve relevant information?"
+                type="received"
+                timestamp="2:45 PM"
+              />
+            </div>
+            <div className={styles.floatingMessageRight}>
+              <MessageBubble
+                message="I use semantic search to find the most relevant documents, then generate contextually accurate responses based on that information. It's fast, efficient, and incredibly precise!"
+                type="sent"
+                timestamp="2:45 PM"
+                status="read"
+              />
+            </div>
+          </div>
+
           <div className={styles.projectDetails}>
             <div className={styles.detailColumn}>
               <h3>Technologies</h3>
