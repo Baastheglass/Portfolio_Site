@@ -13,15 +13,6 @@ export default function VintageMac() {
   const sceneRef = useRef(null);
   const textureRef = useRef(null);
 
-  // Add instance tracking with truly unique IDs
-  const instanceNumber = ++globalInstanceCounter;
-  const instanceId = useRef(`${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
-  
-  // Reduced logging - only show if multiple instances
-  if (globalInstanceCounter > 1) {
-    console.log(`[VintageMac #${instanceNumber}] Multiple instances detected! Total: ${globalInstanceCounter}`);
-  }
-
   useEffect(() => {
     // Prevent double initialization in React Strict Mode
     if (!mountRef.current || rendererRef.current || isInitializedRef.current) {
@@ -30,7 +21,6 @@ export default function VintageMac() {
     
     // Check if mount point already has children (another renderer)
     if (mountRef.current.children.length > 0) {
-      console.log(`[VintageMac #${instanceNumber}] Mount point already occupied, skipping`);
       return;
     }
     
@@ -46,8 +36,8 @@ export default function VintageMac() {
       0.1,
       1000
     );
-    camera.position.set(4, 2, 7);
-    camera.lookAt(0, 0.3, 0);
+    camera.position.set(8, 4, 15);
+    camera.lookAt(0, 0.8, 0);
 
     const renderer = new THREE.WebGLRenderer({ 
       antialias: true,
@@ -77,8 +67,9 @@ export default function VintageMac() {
 
     // Create main group
     const macGroup = new THREE.Group();
-    macGroup.rotation.y = -0.3;
-    macGroup.rotation.x = -0.08;
+    macGroup.scale.set(2.8, 2.8, 2.8);
+    macGroup.rotation.y = 0;
+    macGroup.rotation.x = -0.05;
 
     // Colors - Classic Mac beige
     const beige = new THREE.Color(0xf4ead8);
@@ -437,11 +428,11 @@ export default function VintageMac() {
         lastCodeUpdate = currentTime;
       }
 
-      // Gentle bobbing
-      macGroup.position.y = Math.sin(time) * 0.10;
+      // Gentle bobbing animation
+      macGroup.position.y = Math.sin(time) * 0.08;
       
       // Slight rotation
-      macGroup.rotation.y = -0.3 + Math.sin(time * 0.5) * 0.035;
+      macGroup.rotation.y = -0.25 + Math.sin(time * 0.5) * 0.03;
 
       renderer.render(scene, camera);
     };

@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import MessageBubble from './components/MessageBubble'
 import styles from "./page.module.css";
 
@@ -11,8 +11,30 @@ const VintageComputer = dynamic(() => import('./components/VintageComputer'), {
 })
 
 export default function Home() {
+  const [messagesVisible, setMessagesVisible] = useState(false);
+  const messagesRef = useRef(null);
+
   useEffect(() => {
-    // Component lifecycle complete
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setMessagesVisible(true);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    if (messagesRef.current) {
+      observer.observe(messagesRef.current);
+    }
+
+    return () => {
+      if (messagesRef.current) {
+        observer.unobserve(messagesRef.current);
+      }
+    };
   }, [])
 
   return (
@@ -32,23 +54,23 @@ export default function Home() {
       <section className={styles.projectHero}>
         <div className={styles.projectHeroContent}>
           <div className={styles.projectNumber}>01</div>
-          <h2 className={styles.projectTitle}>AI Chat Application</h2>
+          <h2 className={styles.projectTitle}>WhatsApp Agent Maker Platform</h2>
           <p className={styles.projectDescription}>
-            An intelligent conversational AI powered by advanced RAG (Retrieval-Augmented Generation) 
-            technology and large language models. Features real-time responses, context-aware conversations, 
-            and seamless integration with knowledge bases.
+            Build intelligent WhatsApp chatbots in minutes, not months. Transform your WhatsApp into 
+            a powerful AI assistant with custom agents, personalized prompts, and seamless external 
+            service connections—all through an intuitive no-code dashboard.
           </p>
           
           {/* Floating Message Demo */}
-          <div className={styles.floatingMessagesContainer}>
-            <div className={styles.floatingMessageLeft}>
+          <div ref={messagesRef} className={styles.floatingMessagesContainer}>
+            <div className={`${styles.floatingMessageLeft} ${messagesVisible ? styles.animate : ''}`}>
               <MessageBubble
                 message="How does your RAG system retrieve relevant information?"
                 type="received"
                 timestamp="2:45 PM"
               />
             </div>
-            <div className={styles.floatingMessageRight}>
+            <div className={`${styles.floatingMessageRight} ${messagesVisible ? styles.animate : ''}`}>
               <MessageBubble
                 message="I use semantic search to find the most relevant documents, then generate contextually accurate responses based on that information. It's fast, efficient, and incredibly precise!"
                 type="sent"
@@ -62,21 +84,24 @@ export default function Home() {
             <div className={styles.detailColumn}>
               <h3>Technologies</h3>
               <div className={styles.techTags}>
-                <span>React</span>
                 <span>Next.js</span>
-                <span>Python</span>
-                <span>FastAPI</span>
-                <span>Haystack</span>
-                <span>LLMs</span>
+                <span>Node.js</span>
+                <span>Express</span>
+                <span>MongoDB</span>
+                <span>Whatsapp-Web.js</span>
+                <span>OpenAI</span>
+                <span>Tailwind CSS</span>
               </div>
             </div>
             <div className={styles.detailColumn}>
               <h3>Key Features</h3>
               <ul>
-                <li>Real-time AI responses</li>
-                <li>Context-aware conversations</li>
-                <li>Terminal-style interface</li>
-                <li>Seamless backend integration</li>
+                <li>Effortless agent building</li>
+                <li>Easy to use interface</li>
+                <li>Multiple AI Agent deployment for each number</li>
+                <li>n8n and OpenAI integration</li>
+                <li>Conversation history tracking for better performance</li>
+                <li>JWT authentication & security</li>
               </ul>
             </div>
           </div>
