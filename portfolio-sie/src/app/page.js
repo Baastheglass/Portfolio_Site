@@ -196,7 +196,7 @@ export default function Home() {
       </section>
 
       {/* Project Hero 3 - Data Visualization Dashboard */}
-      <section className={styles.projectHero}>
+      {/* <section className={styles.projectHero}>
         <div className={styles.projectHeroContent}>
           <div className={styles.projectNumber}>03</div>
           <h2 className={styles.projectTitle}>Data Visualization Dashboard</h2>
@@ -232,10 +232,10 @@ export default function Home() {
             <a href="#" className={styles.projectButtonSecondary}>View Code</a>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Project Hero 4 - Task Management App */}
-      <section className={styles.projectHero}>
+      {/* <section className={styles.projectHero}>
         <div className={styles.projectHeroContent}>
           <div className={styles.projectNumber}>04</div>
           <h2 className={styles.projectTitle}>Task Management App</h2>
@@ -271,7 +271,7 @@ export default function Home() {
             <a href="#" className={styles.projectButtonSecondary}>View Code</a>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Contact Hero */}
       <section className={styles.contactHero}>
