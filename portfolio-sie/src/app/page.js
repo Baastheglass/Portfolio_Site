@@ -13,6 +13,7 @@ const VintageComputer = dynamic(() => import('./components/VintageComputer'), {
 export default function Home() {
   const [messagesVisible, setMessagesVisible] = useState(false);
   const messagesRef = useRef(null);
+  const araneaVideoRef = useRef(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -30,9 +31,30 @@ export default function Home() {
       observer.observe(messagesRef.current);
     }
 
+    // Video observer for ARANEA demo
+    const videoObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && araneaVideoRef.current) {
+            araneaVideoRef.current.play();
+          } else if (araneaVideoRef.current) {
+            araneaVideoRef.current.pause();
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    if (araneaVideoRef.current) {
+      videoObserver.observe(araneaVideoRef.current);
+    }
+
     return () => {
       if (messagesRef.current) {
         observer.unobserve(messagesRef.current);
+      }
+      if (araneaVideoRef.current) {
+        videoObserver.unobserve(araneaVideoRef.current);
       }
     };
   }, [])
@@ -112,35 +134,57 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Project Hero 2 - E-Commerce Platform */}
+      {/* Project Hero 2 - ARANEA Penetration Testing Platform */}
       <section className={styles.projectHero}>
         <div className={styles.projectHeroContent}>
           <div className={styles.projectNumber}>02</div>
-          <h2 className={styles.projectTitle}>E-Commerce Platform</h2>
+          <h2 className={styles.projectTitle}>🕷️ ARANEA - AI-Powered Penetration Testing Platform</h2>
           <p className={styles.projectDescription}>
-            A full-featured e-commerce solution with modern UI/UX, secure payment processing, 
-            inventory management, and real-time order tracking. Built with scalability and 
-            performance in mind to handle thousands of concurrent users.
+            An advanced conversational AI penetration testing platform that transforms complex security 
+            workflows into natural language interactions. Simply talk to your pentesting tools through 
+            an elegant terminal interface—no need to memorize command syntax. ARANEA orchestrates 
+            industry-standard security tools, formats results intelligently, and generates professional 
+            OWASP/PTES-compliant reports automatically.
           </p>
+          
+          {/* Video Demo */}
+          <div className={styles.videoContainer}>
+            <video 
+              ref={araneaVideoRef}
+              className={styles.demoVideo}
+              muted 
+              loop 
+              playsInline
+              preload="metadata"
+            >
+              <source src="aranea.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+
           <div className={styles.projectDetails}>
             <div className={styles.detailColumn}>
               <h3>Technologies</h3>
               <div className={styles.techTags}>
                 <span>Next.js</span>
-                <span>Node.js</span>
+                <span>FastAPI</span>
+                <span>Python</span>
                 <span>MongoDB</span>
-                <span>Stripe</span>
-                <span>Redis</span>
-                <span>AWS</span>
+                <span>Google Gemini AI</span>
+                <span>WebSocket</span>
+                <span>Metasploit</span>
+                <span>Nmap</span>
               </div>
             </div>
             <div className={styles.detailColumn}>
               <h3>Key Features</h3>
               <ul>
-                <li>Secure payment gateway</li>
-                <li>Real-time inventory sync</li>
-                <li>Advanced search & filters</li>
-                <li>Order tracking system</li>
+                <li>AI-powered natural language orchestration</li>
+                <li>Multi-tool integration (Masscan, Nmap, Metasploit)</li>
+                <li>Real-time WebSocket feedback</li>
+                <li>Intelligent result formatting & recommendations</li>
+                <li>Automated PDF report generation</li>
+                <li>Multi-user support with isolated workspaces</li>
               </ul>
             </div>
           </div>

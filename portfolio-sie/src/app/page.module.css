@@ -108,6 +108,24 @@
   max-width: 900px;
 }
 
+/* Video Container for ARANEA Demo */
+.videoContainer {
+  width: 100%;
+  max-width: 900px;
+  margin: 2rem auto;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(74, 123, 167, 0.4);
+  background: rgba(18, 36, 53, 0.8);
+}
+
+.demoVideo {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 .projectDetails {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
