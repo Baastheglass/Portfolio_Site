@@ -129,7 +129,7 @@ export default function Home() {
           </div>
           <div className={styles.projectLinks}>
             <a href="#" className={styles.projectButton}>View Live Demo</a>
-            <a href="#" className={styles.projectButtonSecondary}>View Code</a>
+            <a href="https://github.com/Baastheglass/My-Whatsapp-Agent" className={styles.projectButtonSecondary}>View Code</a>
           </div>
         </div>
       </section>
@@ -190,7 +190,7 @@ export default function Home() {
           </div>
           <div className={styles.projectLinks}>
             <a href="#" className={styles.projectButton}>View Live Demo</a>
-            <a href="#" className={styles.projectButtonSecondary}>View Code</a>
+            <a href="https://github.com/Baastheglass/Aranea" className={styles.projectButtonSecondary}>View Code</a>
           </div>
         </div>
       </section>
