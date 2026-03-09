@@ -31,18 +31,18 @@ export default function Home() {
       observer.observe(messagesRef.current);
     }
 
-    // Video observer for ARANEA demo
+    // Video observer for ARANEA demo autoplay
     const videoObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && araneaVideoRef.current) {
-            araneaVideoRef.current.play();
-          } else if (araneaVideoRef.current) {
-            araneaVideoRef.current.pause();
+            araneaVideoRef.current.play().catch(() => {
+              // Autoplay was prevented, user can manually play
+            });
           }
         });
       },
-      { threshold: 0.5 }
+      { threshold: 0.3 }
     );
 
     if (araneaVideoRef.current) {
@@ -152,7 +152,8 @@ export default function Home() {
             <video 
               ref={araneaVideoRef}
               className={styles.demoVideo}
-              muted 
+              controls
+              muted
               loop 
               playsInline
               preload="metadata"
@@ -281,9 +282,9 @@ export default function Home() {
             I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.
           </p>
           <div className={styles.contactLinks}>
-            <a href="mailto:contact@example.com" className={styles.contactButton}>Email Me</a>
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className={styles.contactButton}>GitHub</a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className={styles.contactButton}>LinkedIn</a>
+            <a href="mailto:baaasil6@gmail.com" className={styles.projectButton}>Email Me</a>
+            <a href="https://github.com/Baastheglass" target="_blank" rel="noopener noreferrer" className={styles.projectButtonSecondary}>GitHub</a>
+            <a href="https://www.linkedin.com/in/muhammad-baasil-a65116361/" target="_blank" rel="noopener noreferrer" className={styles.projectButtonSecondary}>LinkedIn</a>
           </div>
         </div>
       </section>
