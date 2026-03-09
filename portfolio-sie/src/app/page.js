@@ -128,7 +128,7 @@ export default function Home() {
             </div>
           </div>
           <div className={styles.projectLinks}>
-            <a href="#" className={styles.projectButton}>View Live Demo</a>
+            <a href="https://my-whatsapp-agent-sage.vercel.app/" className={styles.projectButton}>View Live Demo</a>
             <a href="https://github.com/Baastheglass/My-Whatsapp-Agent" className={styles.projectButtonSecondary}>View Code</a>
           </div>
         </div>
