@@ -14,6 +14,47 @@ export default function Home() {
   const [messagesVisible, setMessagesVisible] = useState(false);
   const messagesRef = useRef(null);
   const araneaVideoRef = useRef(null);
+  const [displayedText, setDisplayedText] = useState('');
+  const [titleIndex, setTitleIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const titles = [
+    'Agentic AI Developer',
+    'Cyber Security Enthusiast',
+    'Chaotic Experimenter'
+  ];
+
+  // Typing effect
+  useEffect(() => {
+    const currentTitle = titles[titleIndex];
+    const typingSpeed = isDeleting ? 50 : 100;
+    const pauseTime = isDeleting ? 500 : 2000;
+
+    if (!isDeleting && displayedText === currentTitle) {
+      // Pause before starting to delete
+      const timeout = setTimeout(() => setIsDeleting(true), pauseTime);
+      return () => clearTimeout(timeout);
+    }
+
+    if (isDeleting && displayedText === '') {
+      // Move to next title
+      setIsDeleting(false);
+      setTitleIndex((prev) => (prev + 1) % titles.length);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setDisplayedText((prev) => {
+        if (isDeleting) {
+          return prev.slice(0, -1);
+        } else {
+          return currentTitle.slice(0, prev.length + 1);
+        }
+      });
+    }, typingSpeed);
+
+    return () => clearTimeout(timeout);
+  }, [displayedText, isDeleting, titleIndex]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -68,7 +109,10 @@ export default function Home() {
         </div>
         <div className={styles.heroContent}>
           <h1 className={styles.mainTitle}>Baasil</h1>
-          <p className={styles.mainSubtitle}>Full Stack Developer & AI Enthusiast</p>
+          <p className={styles.mainSubtitle}>
+            {displayedText}
+            <span className={styles.cursor}>|</span>
+          </p>
         </div>
       </section>
 
