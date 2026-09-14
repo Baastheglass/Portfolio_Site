@@ -27,14 +27,14 @@
 }
 
 .messageBubble.sent {
-  background-color: #D9FDD3;
-  color: #111B21;
+  background-color: #005C4B;
+  color: #E9EDEF;
   border-top-right-radius: 0;
 }
 
 .messageBubble.received {
-  background-color: white;
-  color: #111B21;
+  background-color: #202C33;
+  color: #E9EDEF;
   border-top-left-radius: 0;
 }
 
@@ -84,12 +84,12 @@
 
 .timestamp {
   font-size: 0.6875rem;
-  color: #667781;
+  color: #8696A0;
   user-select: none;
 }
 
 .statusIcon {
-  color: #667781;
+  color: #8696A0;
 }
 
 .checkIcon {

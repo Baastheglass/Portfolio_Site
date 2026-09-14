@@ -55,11 +55,11 @@ const MessageBubble = ({
         <span className={`${styles.tail} ${isSent ? styles.sent : styles.received}`} aria-hidden="true">
           {isSent ? (
             <svg width="8" height="13" viewBox="0 0 8 13" xmlns="http://www.w3.org/2000/svg">
-              <path d="M0 0 Q8 0 8 13 L0 6Z" fill="#D9FDD3" />
+              <path d="M0 0 Q8 0 8 13 L0 6Z" fill="#005C4B" />
             </svg>
           ) : (
             <svg width="8" height="13" viewBox="0 0 8 13" xmlns="http://www.w3.org/2000/svg">
-              <path d="M8 0 Q0 0 0 13 L8 6Z" fill="white" />
+              <path d="M8 0 Q0 0 0 13 L8 6Z" fill="#202C33" />
             </svg>
           )}
         </span>
