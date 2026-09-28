@@ -9,7 +9,6 @@ const VintageComputer = dynamic(() => import('./components/VintageComputer'), {
   ssr: false,
   loading: () => <div className={styles.canvasLoader}>warming up the tube...</div>
 })
-const BackgroundField = dynamic(() => import('./components/BackgroundField'), { ssr: false })
 const Motion = dynamic(() => import('./components/Motion'), { ssr: false })
 
 const titles = [
@@ -74,14 +73,12 @@ const skills = [
   { group: 'AI / ML', items: 'LLMs, LangChain, RAG, OpenAI, Gemini, TensorFlow' },
 ];
 
-const marqueeWords = ['Node.js', 'TypeScript', 'Python', 'FastAPI', 'MySQL', 'MongoDB', 'Express', 'RAG', 'WebSockets', 'Nginx'];
-
-// Splits text into per-character spans for GSAP, keeping words unbroken
-function Split({ text, charProps = {}, className = '' }) {
+// Splits text into per-character spans for the hero intro, keeping words unbroken
+function Split({ text }) {
   return text.split(' ').map((word, w) => (
     <span key={w} className={styles.word}>
       {[...word].map((ch, i) => (
-        <span key={i} className={`char ${className}`} {...charProps}>{ch}</span>
+        <span key={i} className="char" data-hero-char="">{ch}</span>
       ))}
       {' '}
     </span>
@@ -157,16 +154,15 @@ export default function Home() {
 
   return (
     <>
-      <BackgroundField />
       <Motion />
       <div className={styles.container}>
         <nav className={styles.nav}>
-          <a href="#top" className={styles.navBrand} data-magnetic>mb<span>/</span></a>
+          <a href="#top" className={styles.navBrand}>mb</a>
           <div className={styles.navLinks}>
-            <a href="#about" data-magnetic>about</a>
-            <a href="#experience" data-magnetic>experience</a>
-            <a href="#work" data-magnetic>work</a>
-            <a href="#contact" data-magnetic>say hi</a>
+            <a href="#about">about</a>
+            <a href="#experience">experience</a>
+            <a href="#work">work</a>
+            <a href="#contact">say hi</a>
           </div>
         </nav>
 
@@ -182,14 +178,14 @@ export default function Home() {
             </p>
             <h1 className={styles.mainTitle} aria-label="Muhammad Baasil">
               <span className={styles.titleLine}>
-                <Split text="Muhammad" className={styles.heroChar} charProps={{ 'data-hero-char': '' }} />
+                <Split text="Muhammad" />
               </span>
               <span className={`${styles.titleLine} ${styles.titleSerif}`}>
-                <Split text="Baasil" className={styles.heroChar} charProps={{ 'data-hero-char': '' }} />
+                <Split text="Baasil" />
               </span>
             </h1>
             <p className={styles.mainSubtitle} data-hero-fade>
-              <span className={styles.prompt}>&gt;</span> {displayedText}
+              {displayedText}
               <span className={styles.cursor} />
             </p>
             <p className={styles.heroDescription} data-hero-fade>
@@ -197,45 +193,20 @@ export default function Home() {
               APIs, workflows, and the permission checks nobody notices until they&apos;re wrong.
             </p>
             <div className={styles.inlineLinks} data-hero-fade>
-              <a href="#experience" className={styles.textLink} data-magnetic>what I&apos;ve built <span>↓</span></a>
-              <a href="mailto:baaasil6@gmail.com" className={styles.textLinkMuted} data-magnetic>baaasil6@gmail.com</a>
+              <a href="#experience" className={styles.textLink}>what I&apos;ve built <span>↓</span></a>
+              <a href="mailto:baaasil6@gmail.com" className={styles.textLinkMuted}>baaasil6@gmail.com</a>
             </div>
           </div>
-
-          <div className={styles.annotation} data-hero-fade aria-hidden="true">
-            <span>psst, it works.<br />just start typing</span>
-            <svg viewBox="0 0 120 80" className={styles.annotationArrow}>
-              <path d="M8 10 C 40 4, 70 20, 78 44 S 96 70, 110 66" />
-              <path d="M100 58 L 111 66 L 99 73" />
-            </svg>
-          </div>
-
-          <div className={styles.scrollHint} data-hero-fade>
-            <span>scroll</span>
-            <i />
-          </div>
         </section>
-
-        {/* Marquee */}
-        <div className={styles.marqueeWrap} aria-hidden="true">
-          <div className={styles.marquee} data-marquee>
-            {[...marqueeWords, ...marqueeWords].map((w, i) => (
-              <span key={i} className={i % 2 ? styles.marqueeSerif : ''}>
-                {w}<b>✳</b>
-              </span>
-            ))}
-          </div>
-        </div>
 
         {/* About */}
         <section id="about" className={styles.section}>
           <div className={styles.sectionInner}>
-            <p className={styles.sectionLabel}>(01) about</p>
+            <p className={styles.sectionLabel} data-reveal>about</p>
             <div className={styles.aboutGrid}>
               <div>
-                <h2 className={styles.sectionTitle} data-split>
-                  <Split text="The best backend work is" />
-                  <em><Split text="invisible." /></em>
+                <h2 className={styles.sectionTitle} data-reveal>
+                  The best backend work is <em>invisible.</em>
                 </h2>
                 <p className={styles.bodyText} data-reveal>
                   A lead lands with the right advisor, a payment slip is checked without anyone chasing it,
@@ -262,9 +233,9 @@ export default function Home() {
         {/* Experience */}
         <section id="experience" className={styles.section}>
           <div className={styles.sectionInner}>
-            <p className={styles.sectionLabel}>(02) experience</p>
-            <h2 className={styles.sectionTitle} data-split>
-              <Split text="Where I've" /> <em><Split text="shipped." /></em>
+            <p className={styles.sectionLabel} data-reveal>experience</p>
+            <h2 className={styles.sectionTitle} data-reveal>
+              Where I&apos;ve <em>shipped.</em>
             </h2>
             <ol className={styles.timeline}>
               <span className={styles.rail} data-rail />
@@ -272,7 +243,7 @@ export default function Home() {
                 <li key={job.company + job.role} className={styles.job} data-reveal>
                   <div className={styles.jobMeta}>
                     <span className={styles.jobPeriod}>{job.period}</span>
-                    {job.current && <span className={styles.currentBadge}>on it right now</span>}
+                    {job.current && <span className={styles.currentBadge}>current</span>}
                   </div>
                   <div className={styles.jobBody}>
                     <h3 className={styles.jobRole}>
@@ -294,11 +265,10 @@ export default function Home() {
 
         {/* Project 01 - WhatsApp Agent Maker */}
         <section id="work" className={styles.projectHero}>
-          <div className={styles.projectBigNumber} data-parallax="-40" aria-hidden="true">01</div>
           <div className={styles.projectHeroContent}>
-            <p className={styles.sectionLabel}>(03) selected work</p>
-            <h2 className={styles.projectTitle} data-split>
-              <Split text="WhatsApp Agent" /> <em><Split text="Maker" /></em>
+            <p className={styles.sectionLabel} data-reveal>selected work</p>
+            <h2 className={styles.projectTitle} data-reveal>
+              WhatsApp Agent <em>Maker</em>
             </h2>
             <p className={styles.projectDescription} data-reveal>
               Build intelligent WhatsApp chatbots in minutes, not months. Turn a WhatsApp number into
@@ -306,7 +276,7 @@ export default function Home() {
               all through a no-code dashboard.
             </p>
 
-            <div ref={messagesRef} className={styles.floatingMessagesContainer} data-tilt>
+            <div ref={messagesRef} className={styles.floatingMessagesContainer}>
               <div className={styles.phoneHeader}>
                 <i /> <span>Agent · online</span>
               </div>
@@ -340,34 +310,30 @@ export default function Home() {
                   <span>MongoDB</span>
                   <span>Whatsapp-Web.js</span>
                   <span>OpenAI</span>
-                  <span>Tailwind CSS</span>
                 </div>
               </div>
               <div className={styles.detailColumn}>
                 <h3>What it does</h3>
                 <ul>
-                  <li>Effortless agent building</li>
-                  <li>Easy to use interface</li>
-                  <li>Multiple AI Agent deployment for each number</li>
+                  <li>Multiple AI agents per number, built without code</li>
                   <li>n8n and OpenAI integration</li>
-                  <li>Conversation history tracking for better performance</li>
-                  <li>JWT authentication & security</li>
+                  <li>Conversation history tracking</li>
+                  <li>JWT authentication</li>
                 </ul>
               </div>
             </div>
             <div className={styles.inlineLinks}>
-              <a href="https://my-whatsapp-agent-sage.vercel.app/" target="_blank" rel="noopener noreferrer" className={styles.textLink} data-magnetic>live demo <span>↗</span></a>
-              <a href="https://github.com/Baastheglass/My-Whatsapp-Agent" target="_blank" rel="noopener noreferrer" className={styles.textLinkMuted} data-magnetic>source <span>↗</span></a>
+              <a href="https://my-whatsapp-agent-sage.vercel.app/" target="_blank" rel="noopener noreferrer" className={styles.textLink}>live demo <span>↗</span></a>
+              <a href="https://github.com/Baastheglass/My-Whatsapp-Agent" target="_blank" rel="noopener noreferrer" className={styles.textLinkMuted}>source <span>↗</span></a>
             </div>
           </div>
         </section>
 
         {/* Project 02 - ARANEA */}
         <section className={styles.projectHero}>
-          <div className={styles.projectBigNumber} data-parallax="-40" aria-hidden="true">02</div>
           <div className={styles.projectHeroContent}>
-            <h2 className={styles.projectTitle} data-split>
-              <em><Split text="ARANEA" /></em> <Split text="talks to your pentest tools" />
+            <h2 className={styles.projectTitle} data-reveal>
+              <em>ARANEA</em> talks to your pentest tools
             </h2>
             <p className={styles.projectDescription} data-reveal>
               A conversational AI penetration testing platform that turns complex security workflows
@@ -375,7 +341,7 @@ export default function Home() {
               security tools, formats results, and writes OWASP/PTES-compliant reports on its own.
             </p>
 
-            <div className={styles.videoContainer} data-grow>
+            <div className={styles.videoContainer} data-reveal>
               <video
                 ref={araneaVideoRef}
                 className={styles.demoVideo}
@@ -398,8 +364,7 @@ export default function Home() {
                   <span>FastAPI</span>
                   <span>Python</span>
                   <span>MongoDB</span>
-                  <span>Google Gemini AI</span>
-                  <span>WebSocket</span>
+                  <span>Gemini</span>
                   <span>Metasploit</span>
                   <span>Nmap</span>
                 </div>
@@ -407,17 +372,15 @@ export default function Home() {
               <div className={styles.detailColumn}>
                 <h3>What it does</h3>
                 <ul>
-                  <li>AI-powered natural language orchestration</li>
-                  <li>Multi-tool integration (Masscan, Nmap, Metasploit)</li>
+                  <li>Natural language tool orchestration</li>
+                  <li>Masscan, Nmap and Metasploit in one flow</li>
                   <li>Real-time WebSocket feedback</li>
-                  <li>Intelligent result formatting & recommendations</li>
                   <li>Automated PDF report generation</li>
-                  <li>Multi-user support with isolated workspaces</li>
                 </ul>
               </div>
             </div>
             <div className={styles.inlineLinks}>
-              <a href="https://github.com/Baastheglass/Aranea" target="_blank" rel="noopener noreferrer" className={styles.textLink} data-magnetic>source <span>↗</span></a>
+              <a href="https://github.com/Baastheglass/Aranea" target="_blank" rel="noopener noreferrer" className={styles.textLink}>source <span>↗</span></a>
             </div>
           </div>
         </section>
@@ -425,27 +388,27 @@ export default function Home() {
         {/* Contact */}
         <section id="contact" className={styles.contactHero}>
           <div className={styles.contactInner}>
-            <p className={styles.sectionLabel}>(04) contact</p>
-            <h2 className={styles.contactTitle} data-split>
-              <Split text="Got something" /> <em><Split text="worth building?" /></em>
+            <p className={styles.sectionLabel} data-reveal>contact</p>
+            <h2 className={styles.contactTitle} data-reveal>
+              Got something <em>worth building?</em>
             </h2>
             <p className={styles.contactDescription} data-reveal>
               I&apos;m open to backend and platform roles, odd side projects, and good conversations.
             </p>
-            <a href="mailto:baaasil6@gmail.com" className={styles.bigEmail} data-magnetic>
+            <a href="mailto:baaasil6@gmail.com" className={styles.bigEmail} data-reveal>
               baaasil6@gmail.com
             </a>
-            <div className={styles.contactLinks}>
-              <a href="https://github.com/Baastheglass" target="_blank" rel="noopener noreferrer" className={styles.textLinkMuted} data-magnetic>github <span>↗</span></a>
+            <div className={styles.contactLinks} data-reveal>
+              <a href="https://github.com/Baastheglass" target="_blank" rel="noopener noreferrer" className={styles.textLinkMuted}>github <span>↗</span></a>
               <span className={styles.divider} />
-              <a href="https://www.linkedin.com/in/muhammad-baasil-a65116361/" target="_blank" rel="noopener noreferrer" className={styles.textLinkMuted} data-magnetic>linkedin <span>↗</span></a>
+              <a href="https://www.linkedin.com/in/muhammad-baasil-a65116361/" target="_blank" rel="noopener noreferrer" className={styles.textLinkMuted}>linkedin <span>↗</span></a>
             </div>
           </div>
         </section>
 
         <footer className={styles.footer}>
           <p>© 2026 Muhammad Baasil</p>
-          <p>built with three.js, gsap &amp; too much chai</p>
+          <p>Lahore, PK</p>
         </footer>
       </div>
     </>
